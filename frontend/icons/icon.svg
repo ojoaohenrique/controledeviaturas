@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#0056b3" rx="80" ry="80"/>
+  
+  <!-- Shield shape -->
+  <path d="M256 80 
+           C 256 80, 400 120, 400 220 
+           C 400 340, 320 400, 256 440 
+           C 192 400, 112 340, 112 220 
+           C 112 120, 256 80, 256 80 Z" 
+        fill="#ffffff" stroke="#003d7a" stroke-width="8"/>
+  
+  <!-- Car icon -->
+  <g transform="translate(256, 260) scale(0.8)">
+    <!-- Car body -->
+    <path d="M-100 20 
+             L-90 -30 
+             L-60 -50 
+             L60 -50 
+             L90 -30 
+             L100 20 
+             L100 40 
+             L-100 40 Z" 
+          fill="#0056b3" stroke="#003d7a" stroke-width="4"/>
+    
+    <!-- Car roof -->
+    <path d="M-60 -50 
+             L-50 -80 
+             L50 -80 
+             L60 -50 Z" 
+          fill="#0056b3" stroke="#003d7a" stroke-width="4"/>
+    
+    <!-- Windows -->
+    <path d="M-55 -45 L-48 -70 L-5 -70 L-5 -45 Z" fill="#87CEEB" stroke="#003d7a" stroke-width="2"/>
+    <path d="M5 -45 L5 -70 L48 -70 L55 -45 Z" fill="#87CEEB" stroke="#003d7a" stroke-width="2"/>
+    
+    <!-- Wheels -->
+    <circle cx="-60" cy="40" r="22" fill="#333"/>
+    <circle cx="-60" cy="40" r="12" fill="#666"/>
+    <circle cx="60" cy="40" r="22" fill="#333"/>
+    <circle cx="60" cy="40" r="12" fill="#666"/>
+    
+    <!-- Headlights -->
+    <ellipse cx="95" cy="0" rx="8" ry="12" fill="#FFD700"/>
+    <ellipse cx="-95" cy="0" rx="8" ry="12" fill="#FFD700"/>
+    
+    <!-- Siren -->
+    <rect x="-10" y="-95" width="20" height="15" fill="#ff0000" rx="3"/>
+    <ellipse cx="0" cy="-95" rx="12" ry="5" fill="#ff4444"/>
+  </g>
+  
+  <!-- Text GML -->
+  <text x="256" y="480" 
+        font-family="Arial, sans-serif" 
+        font-size="48" 
+        font-weight="bold" 
+        text-anchor="middle" 
+        fill="#ffffff">GML</text>
+</svg>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0056b3">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="GML - Dashboard de Controle de Viaturas">
+    <title>GML - Dashboard</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+
+<body>
+    <header id="headerUsuario"></header>
+
+    <main class="container">
+        <section class="topbar">
+            <div>
+                <h1>Dashboard - Controle de Viaturas</h1>
+                <p>Visão geral das operações da Guarda Municipal de Laguna.</p>
+            </div>
+        </section>
+
+        <section class="dashboard-cards">
+            <div class="stat-card">
+                <span class="stat-label">Viaturas em operação</span>
+                <span class="stat-value" id="dashViaturasEmOperacao">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">KM rodado hoje</span>
+                <span class="stat-value" id="dashKmRodadoHoje">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Consumo médio (KM/L)</span>
+                <span class="stat-value" id="dashConsumoMedio">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Viatura mais utilizada</span>
+                <span class="stat-value" id="dashViaturaMaisUtilizada">-</span>
+            </div>
+        </section>
+
+        <section class="dashboard-chart">
+            <h2>KM rodado por viatura</h2>
+            <canvas id="graficoKmPorViatura"></canvas>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script>
+        window.ENV_SUPABASE_URL = window.ENV_SUPABASE_URL || localStorage.getItem('SUPABASE_URL') || '';
+        window.ENV_SUPABASE_ANON_KEY = window.ENV_SUPABASE_ANON_KEY || localStorage.getItem('SUPABASE_ANON_KEY') || '';
+        window.ENV_API_BASE_URL = window.ENV_API_BASE_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api');
+    </script>
+    <script src="js/config.js"></script>
+    <script src="js/supabaseClient.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components/headerUsuario.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/pwa.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            requireAuth();
+            renderHeaderUsuario();
+            initDashboard();
+            registerPWA();
+        });
+    </script>
+</body>
+
+</html>

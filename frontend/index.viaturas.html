@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0056b3">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="GML - Controle de Viaturas da Guarda Municipal de Laguna">
+    <title>GML - Controle de Viaturas</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="stylesheet" href="style.viaturas.css">
+</head>
+
+
+
+
+
+
+<body>
+    <div class="container">
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1>GML - Controle de Viaturas</h1>
+                <p>Sistema de Gestão de Frota da Guarda Municipal de Laguna</p>
+            </div>
+            <div class="topbar-stats">
+                <div class="stat-card">
+                    <span class="stat-label">Viaturas em operação</span>
+                    <span class="stat-value" id="contadorEmOperacao">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Viaturas finalizadas</span>
+                    <span class="stat-value" id="contadorFinalizadas">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Total KM rodado</span>
+                    <span class="stat-value" id="contadorTotalKm">0</span>
+                </div>
+            </div>
+        </header>
+        <div class="forms-wrapper">
+            <div class="form-container">
+                <form id="saidaViaturaForm">
+                    <div class="header">
+                        Nova Saída de Viatura
+                    </div>
+                    <div class="form-body">
+                        <div class="form-group">
+                            <label for="viatura" class="required">Viatura</label>
+                            <select id="viatura" name="viatura" required>
+                                <option value="">Selecione...</option>
+                            </select>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="km_saida" class="required">Km Saída</label>
+                                <input type="number" id="km_saida" name="km_saida" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="protocolo" class="required">Protocolo (OPCIONAL)</label>
+                                <input type="number" id="protocolo" name="protocolo" optional>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inspetor" class="required">inspetor</label>
+                            <select id="inspetor" name="inspetor" required>
+                                <option value="">Selecione...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="motorista" class="required">Motorista</label>
+                            <select id="motorista" name="motorista" required>
+                                <option value="">Selecione...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="patrulheiro" class="required">patrulheiro</label>
+                            <select id="patrulheiro" name="patrulheiro" required>
+                                <option value="">Selecione...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="patrulhamento" class="required">Tipo de Patrulhamento</label>
+                            <select id="patrulhamento" name="patrulhamento" required>
+                                <option value="">Selecione...</option>
+                                <option value="Ronda Preventiva">Ronda Preventiva</option>
+                                <option value="Apoio Operacional">Apoio Operacional</option>
+                                <option value="Evento Especial">Evento Especial</option>
+                                <option value="Atendimento Emergencial">Atendimento Emergencial</option>
+                                <option value="Missão">Missão</option>
+                                <option value="Manutenção de viatura">Manutenção de viatura</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="buttons">
+                        <button type="reset" class="btn btn-secondary">Limpar</button>
+                        <button type="submit" class="btn btn-primary">Registrar Saída</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="form-container">
+                <div class="header">
+                    Controle de Abastecimento da Viatura
+                </div>
+                <form id="abastecimentoForm">
+                    <div class="form-body">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="viatura_abastecimento" class="required">Viatura</label>
+                                <select id="viatura_abastecimento" name="viatura_abastecimento" required>
+                                    <option value="">Selecione...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="data_abastecimento" class="required">Data Abastecimento</label>
+                                <input type="date" id="data_abastecimento" name="data_abastecimento" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="km_abastecimento" class="required">KM do Abastecimento</label>
+                                <input type="number" id="km_abastecimento" name="km_abastecimento" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="km_atual" class="required">KM Atual</label>
+                                <input type="number" id="km_atual" name="km_atual" required>
+                            </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label for="motorista_abastecimento" class="required">Motorista</label>
+                                <select id="motorista_abastecimento" name="motorista_abastecimento" required>
+                                    <option value="">Selecione...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="km_rodado">KM Rodado</label>
+                                <input type="text" id="km_rodado" name="km_rodado" readonly
+                                    style="background-color: #e9ecef;">
+                            </div>
+                            <div class="form-group">
+                                <label for="litros" class="required">Litros</label>
+                                <input type="number" id="litros" name="litros" step="0.01" required>
+                            </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label for="media_km_l">Média (KM/L)</label>
+                                <input type="text" id="media_km_l" name="media_km_l" readonly
+                                    style="background-color: #e9ecef;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="buttons">
+                        <button type="reset" class="btn btn-secondary">Limpar</button>
+                        <button type="submit" class="btn btn-primary">Registrar Abastecimento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="registros-wrapper">
+            <div class="registro-container">
+                <h3>Registros de Saída de Viatura</h3>
+                <div class="filtro-wrapper">
+                    <label for="filtroBusca">Pesquisar (viatura, motorista ou protocolo)</label>
+                    <input type="text" id="filtroBusca" placeholder="Digite para filtrar os registros">
+                </div>
+                <table id="tabelaSaidas">
+                    <thead>
+                        <tr>
+                            <th>Viatura</th>
+                            <th>Data/Hora Saída</th>
+                            <th>Km Saída</th>
+                            <th>Motorista</th>
+                            <th>Protocolo</th>
+                            <th>Km Chegada</th>
+                            <th>Km Rodado</th>
+                            <th>Fotos</th>
+                            <th>Observações</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaSaidasBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="registro-container">
+                <h3>Registros de Abastecimento</h3>
+                <table id="tabelaAbastecimento">
+                    <thead>
+                        <tr>
+                            <th>Viatura</th>
+                            <th>Data</th>
+                            <th>KM Abastec.</th>
+                            <th>KM Atual</th>
+                            <th>Litros</th>
+                            <th>KM Rodado</th>
+                            <th>Média</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="footer">
+            © 2026 GUARDA MUNICIPAL DE LAGUNA
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="voltaModal">
+        <div class="modal-content">
+            <h3>Registrar Chegada da Viatura</h3>
+            <p id="modalViaturaInfo"></p>
+
+            <div class="form-group">
+                <label for="modalKmChegada" class="required">KM de Chegada</label>
+                <input type="number" id="modalKmChegada" name="modalKmChegada" required>
+            </div>
+
+            <div class="form-group">
+                <label for="modalFoto">Anexar Fotos (Opcional)</label>
+                <input type="file" id="modalFoto" name="modalFoto" accept="image/*" multiple>
+            </div>
+
+            <div class="form-group">
+                <label for="modalComentarios">Observações (Opcional)</label>
+                <textarea id="modalComentarios" name="modalComentarios" rows="3"></textarea>
+            </div>
+
+            <p id="modalErro">Mensagem de erro aqui.</p>
+
+            <div class="buttons" style="padding: 0;">
+                <button type="button" class="btn btn-secondary" id="modalCancelarBtn">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="modalSalvarBtn">Salvar</button>
+            </div>
+            <input type="hidden" id="modalRowId">
+        </div>
+    </div>
+
+    <script src="dados.js"></script>
+    <script src="viaturas.js"></script>
+
+</body>
+
+</html>
