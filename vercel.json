@@ -15,8 +15,12 @@
             "dest": "api/index.py"
         },
         {
-            "src": "/(.+)",
-            "dest": "/frontend/$1"
+            "src": "/(.*\\.(css|js|png|svg|jpg|ico|json|webmanifest|html))",
+            "dest": "/frontend$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/frontend/login.html"
         }
     ],
     "env": {
