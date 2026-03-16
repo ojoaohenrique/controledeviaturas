@@ -1,17 +1,14 @@
-from models.base import init_db, SessionLocal
-from routes.inspetores import inspetores_bp
-from controllers.dashboard_controller import dashboard_bp
-from controllers.abastecimento_controller import abastecimento_bp
-from controllers.viaturas_controller import viaturas_bp
-from controllers.auth_controller import auth_bp
+from backend.models.base import init_db, SessionLocal
+from backend.routes.inspetores import inspetores_bp
+from backend.controllers.dashboard_controller import dashboard_bp
+from backend.controllers.abastecimento_controller import abastecimento_bp
+from backend.controllers.viaturas_controller import viaturas_bp
+from backend.controllers.auth_controller import auth_bp
 from flask_cors import CORS
 from flask import Flask, jsonify, send_from_directory
 from dotenv import load_dotenv
 import os
 import sys
-
-# Add the backend directory to the path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backend'))
 
 
 def create_app() -> Flask:
@@ -79,16 +76,4 @@ def create_app() -> Flask:
 # Instância global para o Vercel/Gunicorn encontrar
 app = create_app()
 
-# Vercel serverless handler
 
-
-def handler(request, context):
-    """Handler function for Vercel serverless functions."""
-    from werkzeug.serving import run_wsgi
-    return app(request.environ, lambda status, headers: None)
-
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=bool(
-        os.environ.get("FLASK_DEBUG", "1") == "1"))
