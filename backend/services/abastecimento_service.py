@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from sqlalchemy.orm import Session
 
-from models.abastecimento import Abastecimento
+from backend.models.abastecimento import Abastecimento
 
 
 def registrar_abastecimento(

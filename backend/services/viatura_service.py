@@ -4,8 +4,8 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from models.saida_viatura import SaidaViatura
-from models.viatura import Viatura
+from backend.models.saida_viatura import SaidaViatura
+from backend.models.viatura import Viatura
 
 
 def listar_viaturas_ativas(db: Session) -> List[Viatura]:

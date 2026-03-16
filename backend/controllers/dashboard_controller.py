@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request
 
-from models.base import SessionLocal
-from services.auth_service import AuthError, get_current_user_id
-from services.dashboard_service import obter_dashboard
+from backend.models.base import SessionLocal
+from backend.services.auth_service import AuthError, get_current_user_id
+from backend.services.dashboard_service import obter_dashboard
 
 dashboard_bp = Blueprint("dashboard", __name__)
 

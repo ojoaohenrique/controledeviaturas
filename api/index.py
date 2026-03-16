@@ -11,6 +11,11 @@ from backend.app import create_app
 # Vercel's Python WSGI server looks for a variable named `app`.
 app = create_app()
 
+
+def handler(request):
+    """Vercel chama handler para criar a app WSGI."""
+    return app
+
 # This block is for local development and will not run on Vercel.
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

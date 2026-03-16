@@ -5,9 +5,9 @@ from typing import Dict, List
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from models.abastecimento import Abastecimento
-from models.saida_viatura import SaidaViatura
-from models.viatura import Viatura
+from backend.models.abastecimento import Abastecimento
+from backend.models.saida_viatura import SaidaViatura
+from backend.models.viatura import Viatura
 
 
 def obter_dashboard(db: Session) -> Dict:

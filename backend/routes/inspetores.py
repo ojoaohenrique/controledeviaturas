@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 
 try:
     # Tenta importar o cliente Supabase
-    from supabase_client import supabase
+    from backend.supabase_client import supabase
     SUPABASE_AVAILABLE = True
 except ImportError:
     # Se a importação falhar, marca como indisponível

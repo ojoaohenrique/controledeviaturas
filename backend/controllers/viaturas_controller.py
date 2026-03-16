@@ -2,9 +2,9 @@ from decimal import Decimal
 
 from flask import Blueprint, jsonify, request
 
-from models.base import SessionLocal
-from services.auth_service import AuthError, get_current_user_id
-from services.viatura_service import listar_viaturas_ativas, registrar_saida, registrar_volta
+from backend.models.base import SessionLocal
+from backend.services.auth_service import AuthError, get_current_user_id
+from backend.services.viatura_service import listar_viaturas_ativas, registrar_saida, registrar_volta
 
 viaturas_bp = Blueprint("viaturas", __name__)
 

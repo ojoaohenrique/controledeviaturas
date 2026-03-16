@@ -4,12 +4,12 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, Response, send_from_directory
 from flask_cors import CORS
 
-from controllers.auth_controller import auth_bp
-from controllers.viaturas_controller import viaturas_bp
-from controllers.abastecimento_controller import abastecimento_bp
-from controllers.dashboard_controller import dashboard_bp
-from routes.inspetores import inspetores_bp
-from models.base import init_db, SessionLocal
+from backend.controllers.auth_controller import auth_bp
+from backend.controllers.viaturas_controller import viaturas_bp
+from backend.controllers.abastecimento_controller import abastecimento_bp
+from backend.controllers.dashboard_controller import dashboard_bp
+from backend.routes.inspetores import inspetores_bp
+from backend.models.base import init_db, SessionLocal
 
 
 def create_app() -> Flask:

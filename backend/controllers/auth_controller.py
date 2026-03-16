@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from services.auth_service import AuthError, get_current_user_id
+from backend.services.auth_service import AuthError, get_current_user_id
 
 auth_bp = Blueprint("auth", __name__)
 
