@@ -1,21 +1,26 @@
-from supabase import create_client
 import os
+from supabase import create_client
 from dotenv import load_dotenv
 
-# Carrega variáveis de ambiente do arquivo .env localizado na pasta backend
+# Carrega .env apenas para desenvolvimento local.
 load_dotenv()
 
-# URL do projeto Supabase (ex.: https://xxxx.supabase.co)
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-
-# Chave de serviço (secreta) que o backend usa para chamadas administrativas
 SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
 
-if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:
-    raise RuntimeError(
-        "SUPABASE_URL ou SUPABASE_SERVICE_KEY não configurados em .env. "
-        "Verifique o arquivo .env."
-    )
+supabase = None
+SUPABASE_AVAILABLE = False
 
-# Cliente global do Supabase exportado para uso em todo o backend
-supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+if SUPABASE_URL and SUPABASE_SERVICE_KEY:
+    supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+    SUPABASE_AVAILABLE = True
+
+
+def get_supabase_client():
+    """Retorna cliente Supabase ou lança erro com mensagem clara."""
+    if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:
+        raise RuntimeError(
+            "As variáveis de ambiente SUPABASE_URL e SUPABASE_SERVICE_KEY são necessárias."
+            " Configure-as no painel da Vercel e redeploy."
+        )
+    return create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
