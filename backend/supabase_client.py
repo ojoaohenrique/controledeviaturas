@@ -1,26 +1,33 @@
 import os
-from supabase import create_client
+from functools import lru_cache
 from dotenv import load_dotenv
+from supabase import create_client
 
 # Carrega .env apenas para desenvolvimento local.
 load_dotenv()
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
 
-supabase = None
-SUPABASE_AVAILABLE = False
-
-if SUPABASE_URL and SUPABASE_SERVICE_KEY:
-    supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
-    SUPABASE_AVAILABLE = True
+def _get_env_vars():
+    url = os.getenv("SUPABASE_URL", "").strip()
+    key = os.getenv("SUPABASE_SERVICE_KEY", "").strip()
+    return url, key
 
 
+@lru_cache(maxsize=1)
 def get_supabase_client():
-    """Retorna cliente Supabase ou lança erro com mensagem clara."""
-    if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:
+    """Retorna o cliente Supabase. Lança RuntimeError em caso de configuração incorreta."""
+    supabase_url, supabase_service_key = _get_env_vars()
+
+    if not supabase_url or not supabase_service_key:
         raise RuntimeError(
-            "As variáveis de ambiente SUPABASE_URL e SUPABASE_SERVICE_KEY são necessárias."
-            " Configure-as no painel da Vercel e redeploy."
+            "Supabase não configurado: SUPABASE_URL e SUPABASE_SERVICE_KEY devem estar definidos."
         )
-    return create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+
+    try:
+        client = create_client(supabase_url, supabase_service_key)
+    except Exception as exc:
+        raise RuntimeError(
+            "Falha ao criar cliente Supabase. Verifique SUPABASE_SERVICE_KEY e SUPABASE_URL."
+        ) from exc
+
+    return client

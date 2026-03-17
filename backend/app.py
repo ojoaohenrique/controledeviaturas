@@ -9,7 +9,7 @@ from backend.controllers.viaturas_controller import viaturas_bp
 from backend.controllers.abastecimento_controller import abastecimento_bp
 from backend.controllers.dashboard_controller import dashboard_bp
 from backend.routes.inspetores import inspetores_bp
-from backend.models.base import init_db, SessionLocal
+from backend.models.base import init_db, SessionLocal, DB_AVAILABLE
 
 
 def create_app() -> Flask:
@@ -43,8 +43,9 @@ def create_app() -> Flask:
     @app.route("/api/health", methods=["GET"])
     def health_check():
         """Endpoint simples para verificar se o backend está de pé."""
+        if not DB_AVAILABLE:
+            return jsonify({"status": "error", "detail": "DB não configurado ou indisponível."}), 503
         try:
-            # Tenta abrir e fechar uma sessão rapidamente
             db = SessionLocal()
             db.execute("SELECT 1")
             db.close()

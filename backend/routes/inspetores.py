@@ -1,13 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-try:
-    # Tenta importar o cliente Supabase
-    from backend.supabase_client import supabase
-    SUPABASE_AVAILABLE = True
-except ImportError:
-    # Se a importação falhar, marca como indisponível
-    supabase = None
-    SUPABASE_AVAILABLE = False
+from backend.supabase_client import get_supabase_client
 
 # Blueprint dedicado à rota de inspetores
 inspetores_bp = Blueprint("inspetores", __name__)
@@ -18,11 +11,8 @@ def listar_inspetores():
     Busca todos os registros da tabela 'inspetores' no Supabase.
     Retorna a lista de registros como uma lista de dicionários.
     """
-    if not SUPABASE_AVAILABLE:
-        raise ConnectionError("A conexão com o Supabase não foi configurada corretamente.")
-
+    supabase = get_supabase_client()
     response = supabase.table("inspetores").select("*").execute()
-    # response.data já é uma lista de dicts vinda do Supabase Python client
     return response.data or []
 
 
@@ -31,11 +21,8 @@ def adicionar_inspetor(data):
     Insere um novo registro na tabela 'inspetores'.
     Espera um dicionário com os campos compatíveis com a tabela.
     """
-    if not SUPABASE_AVAILABLE:
-        raise ConnectionError("A conexão com o Supabase não foi configurada corretamente.")
-
+    supabase = get_supabase_client()
     response = supabase.table("inspetores").insert(data).execute()
-    # Retorna o primeiro registro inserido (Supabase devolve lista)
     if response.data:
         return response.data[0]
     return None
