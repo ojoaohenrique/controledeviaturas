@@ -36,3 +36,4 @@ def get_supabase_client():
         ) from exc
 
     return client
+
