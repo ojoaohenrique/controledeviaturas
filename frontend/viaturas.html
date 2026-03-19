@@ -18,7 +18,7 @@
 <body>
     <header id="headerUsuario"></header>
 
-    <div class="container">
+    <main class="container">
         <header class="topbar">
             <div class="topbar-left">
                 <h1>GML - Controle de Viaturas</h1>
@@ -43,9 +43,80 @@
         <div class="forms-wrapper">
             <div class="form-container">
                 <form id="saidaViaturaForm">
-                    <div class="header">Nova Saída de Viatura</div>
+                    <div class="header">
+                        Nova Saída de Viatura
+                    </div>
                     <div class="form-body">
-                        ...
+                        <div class="form-group">
+                            <label for="viatura" class="required">Viatura</label>
+                            <select id="viatura" name="viatura" required>
+                                <option value="">Selecione...</option>
+                                <option value="Nissan Frontier 0110">Nissan Frontier 0110</option>
+                                <option value="Chevrolet S10 0111">Chevrolet S10 0111</option>
+                                <option value="Vectra 0112">Vectra 0112</option>
+                                <option value="MOTO 1350 HARLEY DAVIDSON 0107">MOTO GM07</option>
+                            </select>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="km_saida" class="required">Km Saída</label>
+                                <input type="number" id="km_saida" name="km_saida" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="protocolo" class="required">Protocolo (OPCIONAL)</label>
+                                <input type="number" id="protocolo" name="protocolo">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inspetor" class="required">Inspetor</label>
+                            <select id="inspetor" name="inspetor" required>
+                                <option value="">Selecione...</option>
+                                <option value="Maik">Maik</option>
+                                <option value="leandro">Leandro</option>
+                                <option value="Ferreira">Ferreira</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="motorista" class="required">Motorista</label>
+                            <select id="motorista" name="motorista" required>
+                                <option value="">Selecione...</option>
+                                <option value="Sayonara Jacques Vieira">jacques</option>
+                                <option value="Leandro De Araujo">leandro</option>
+                                <option value="Arlon Luiz Da Silva">arlon</option>
+                                <option value="Luiz Eduardo Cortegrosso Silva">Luiz</option>
+                                <option value="Jair pacheco Dos Reis Junior">Reis</option>
+                                <option value="Luciano Ferreira">Ferreira</option>
+                                <option value="Saleide Flor Duarte">Duarte</option>
+                                <option value="Maik custodio Agostinho">Maik</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="patrulheiro" class="required">Patrulheiro</label>
+                            <select id="patrulheiro" name="patrulheiro" required>
+                                <option value="">Selecione...</option>
+                                <option value="Sayonara Jacques Vieira">jacques</option>
+                                <option value="Leandro De Araujo">leandro</option>
+                                <option value="Arlon Luiz Da Silva">arlon</option>
+                                <option value="Luiz Eduardo Cortegrosso Silva">Luiz</option>
+                                <option value="Jair pacheco Dos Reis Junior">Reis</option>
+                                <option value="Luciano Ferreira">Ferreira</option>
+                                <option value="Saleide Flor Duarte">Duarte</option>
+                                <option value="Maik custodio Agostinho">Maik</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="patrulhamento" class="required">Tipo de Patrulhamento</label>
+                            <select id="patrulhamento" name="patrulhamento" required>
+                                <option value="">Selecione...</option>
+                                <option value="Ronda Preventiva">Ronda Preventiva</option>
+                                <option value="Apoio Operacional">Apoio Operacional</option>
+                                <option value="Evento Especial">Evento Especial</option>
+                                <option value="Atendimento Emergencial">Atendimento Emergencial</option>
+                                <option value="Missão">Missão</option>
+                                <option value="Manutenção de viatura">Manutenção de viatura</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="buttons">
                         <button type="reset" class="btn btn-secondary">Limpar</button>
@@ -58,18 +129,12 @@
                 <div class="header">
                     Controle de Abastecimento da Viatura
                 </div>
-
                 <form id="abastecimentoForm">
                     <div class="form-body">
-
                         <div class="form-group">
                             <label for="viatura_abastecimento" class="required">Viatura</label>
                             <select id="viatura_abastecimento" name="viatura_abastecimento" required>
                                 <option value="">Selecione...</option>
-                                <option value="Nissan Frontier 0110">Nissan Frontier 0110</option>
-                                <option value="Chevrolet S10 0111">Chevrolet S10 0111</option>
-                                <option value="Vectra 0112">Vectra 0112</option>
-                                <option value="MOTO GM07">MOTO GM07</option>
                             </select>
                         </div>
 
@@ -78,63 +143,141 @@
                                 <label for="data_abastecimento" class="required">Data Abastecimento</label>
                                 <input type="date" id="data_abastecimento" name="data_abastecimento" required>
                             </div>
-
                             <div class="form-group">
                                 <label for="km_abastecimento" class="required">KM do Abastecimento</label>
                                 <input type="number" id="km_abastecimento" name="km_abastecimento" required>
                             </div>
-
                             <div class="form-group">
                                 <label for="km_atual" class="required">KM Atual</label>
                                 <input type="number" id="km_atual" name="km_atual" required>
                             </div>
-
                             <div class="form-group">
                                 <label for="litros" class="required">Litros</label>
                                 <input type="number" id="litros" name="litros" step="0.01" required>
                             </div>
                         </div>
 
-                        <div class="form-group" style="grid-column: 1 / -1;">
+                        <div class="form-group form-group-full-width">
                             <label for="motorista_abastecimento" class="required">Motorista</label>
                             <select id="motorista_abastecimento" name="motorista_abastecimento" required>
                                 <option value="">Selecione...</option>
-                                <option value="Sayonara Jacques Vieira">jacques</option>
-                                <option value="Leandro De Araujo">leandro</option>
-                                <option value="Arlon Luiz Da Silva">arlon</option>
-                                <option value="Luiz Eduardo Cortegrosso Silva">Luiz</option>
-                                <option value="Jair pacheco Dos Reis Junior">Reis</option>
-                                <option value="Luciano Ferreira">Ferreira</option>
-                                <option value="Saleide Flor Duarte">Duarte</option>
-                                <option value="Maik custodio Agostinho">Maik</option>
                             </select>
                         </div>
 
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="km_rodado">KM Rodado</label>
-                                <input type="text" id="km_rodado" name="km_rodado" readonly>
+                                <input type="text" id="km_rodado" name="km_rodado" readonly class="readonly-input">
                             </div>
 
                             <div class="form-group">
                                 <label for="media_km_l">Média (KM/L)</label>
-                                <input type="text" id="media_km_l" name="media_km_l" readonly>
+                                <input type="text" id="media_km_l" name="media_km_l" readonly class="readonly-input">
                             </div>
                         </div>
-
                     </div>
-
                     <div class="buttons">
                         <button type="reset" class="btn btn-secondary">Limpar</button>
                         <button type="submit" class="btn btn-primary">Registrar Abastecimento</button>
                     </div>
-
                 </form>
             </div>
+        </div>
 
+        <div class="registros-wrapper">
+            <div class="registro-container">
+                <h3>Registros de Saída de Viatura</h3>
+                <div class="filtro-wrapper">
+                    <label for="filtroBusca">Pesquisar (viatura, motorista ou protocolo)</label>
+                    <input type="text" id="filtroBusca" placeholder="Digite para filtrar os registros">
+                </div>
+                <table id="tabelaSaidas">
+                    <thead>
+                        <tr>
+                            <th>Viatura</th>
+                            <th>Data/Hora Saída</th>
+                            <th>Km Saída</th>
+                            <th>Motorista</th>
+                            <th>Protocolo</th>
+                            <th>Km Chegada</th>
+                            <th>Km Rodado</th>
+                            <th>Fotos</th>
+                            <th>Observações</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaSaidasBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="registro-container">
+                <h3>Registros de Abastecimento</h3>
+                <table id="tabelaAbastecimento">
+                    <thead>
+                        <tr>
+                            <th>Viatura</th>
+                            <th>Data</th>
+                            <th>KM Abastec.</th>
+                            <th>KM Atual</th>
+                            <th>Litros</th>
+                            <th>KM Rodado</th>
+                            <th>Média</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer">
+            © 2026 GUARDA MUNICIPAL DE LAGUNA
+        </div>
+    </footer>
+
+    <div class="modal-overlay" id="voltaModal">
+        <div class="modal-content">
+            <h3>Registrar Chegada da Viatura</h3>
+            <p id="modalViaturaInfo"></p>
+            <div class="form-group">
+                <label for="modalKmChegada" class="required">KM de Chegada</label>
+                <input type="number" id="modalKmChegada" name="modalKmChegada" required>
+            </div>
+            <div class="form-group">
+                <label for="modalFoto">Anexar Fotos (Opcional)</label>
+                <input type="file" id="modalFoto" name="modalFoto" accept="image/*" multiple>
+            </div>
+            <div class="form-group">
+                <label for="modalComentarios">Observações (Opcional)</label>
+                <textarea id="modalComentarios" name="modalComentarios" rows="3"></textarea>
+            </div>
+            <p id="modalErro" style="display: none;">Mensagem de erro aqui.</p>
+            <div class="buttons" style="padding: 0;">
+                <button type="button" class="btn btn-secondary" id="modalCancelarBtn">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="modalSalvarBtn">Salvar</button>
+            </div>
+            <input type="hidden" id="modalRowId">
         </div>
     </div>
 
+    <script src="js/config.js"></script>
+    <script src="js/supabaseClient.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components/headerUsuario.js"></script>
+    <script src="js/viaturas.js"></script>
+    <script src="js/pwa.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            requireAuth();
+            renderHeaderUsuario();
+            initSistema();
+            registerPWA();
+        });
+    </script>
 </body>
 
 </html>
