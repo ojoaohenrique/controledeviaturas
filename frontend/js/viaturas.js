@@ -1,6 +1,8 @@
 ﻿(function () {
     'use strict';
 
+    let supabase;
+
     const VIATURAS = [
         'VTR 0107',
         'VTR 0109',
@@ -30,6 +32,8 @@
     ];
 
     async function initSistema() {
+        supabase = getSupabase();
+
         const formSaida = document.getElementById('saidaViaturaForm');
         const tabelaSaidasBody = document.getElementById('tabelaSaidasBody');
         const formAbastecimento = document.getElementById('abastecimentoForm');

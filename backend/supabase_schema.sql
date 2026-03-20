@@ -58,42 +58,40 @@ alter table public.abastecimentos enable row level security;
 -- Políticas básicas de acesso
 
 -- Usuários só veem e alteram o próprio registro em usuarios
-create policy if not exists "usuarios_select_own"
+create policy "usuarios_select_own"
 on public.usuarios
 for select
 using (auth.uid() = id);
 
-create policy if not exists "usuarios_insert_own"
+create policy "usuarios_insert_own"
 on public.usuarios
 for insert
 with check (auth.uid() = id);
 
 -- Todas as viaturas ativas podem ser vistas por qualquer usuário autenticado
-create policy if not exists "viaturas_select_all"
+create policy "viaturas_select_all"
 on public.viaturas
 for select
 using (auth.role() = 'authenticated');
 
 -- Saídas e abastecimentos: leitura e escrita permitidas para usuários autenticados.
 -- (A lógica de negócio pode filtrar por data/turno no backend.)
-
-create policy if not exists "saidas_select_all"
+create policy "saidas_select_all"
 on public.saidas_viaturas
 for select
 using (auth.role() = 'authenticated');
 
-create policy if not exists "saidas_insert_authenticated"
+create policy "saidas_insert_authenticated"
 on public.saidas_viaturas
 for insert
 with check (auth.role() = 'authenticated');
 
-create policy if not exists "abastecimentos_select_all"
+create policy "abastecimentos_select_all"
 on public.abastecimentos
 for select
 using (auth.role() = 'authenticated');
 
-create policy if not exists "abastecimentos_insert_authenticated"
+create policy "abastecimentos_insert_authenticated"
 on public.abastecimentos
 for insert
 with check (auth.role() = 'authenticated');
-
