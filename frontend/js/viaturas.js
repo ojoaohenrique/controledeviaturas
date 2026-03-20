@@ -1,471 +1,526 @@
 ﻿(function () {
     'use strict';
 
-    let supabase;
+    // ===============================================================
+    //  Controle de Viaturas GML
+    //  Integração completa com Supabase
+    //  Tabelas: saidas_viaturas, abastecimentos
+    // ===============================================================
 
+    // ---------------------------------------------------------------
+    // DADOS ESTÁTICOS (selects)
+    // ---------------------------------------------------------------
     const VIATURAS = [
-        'VTR 0107',
-        'VTR 0109',
-        'VTR 0110',
-        'VTR 0111',
+        { value: 'Nissan Frontier 0110', label: 'Nissan Frontier 0110' },
+        { value: 'Chevrolet S10 0111', label: 'Chevrolet S10 0111' },
+        { value: 'Vectra 0112', label: 'Vectra 0112' },
+        { value: 'MOTO 1350 HARLEY DAVIDSON 0107', label: 'MOTO GM07' },
     ];
 
     const MOTORISTAS = [
-        'DUARTE - Saleide Flor Duarte',
-        'JACQUES - Sayonara Vanderleia Jacques',
-        'ARLON - Arlon Luiz Da Silva',
-        'LEANDRO - Leandro de Araújo',
-        'LUIZ - Luiz Eduardo Cortegrosso',
-        'MAIK - Maik Custódio Agostinho',
-        'REIS - Jair Pacheco Dos Reis Junior',
+        { value: 'Sayonara Jacques Vieira', label: 'Jacques' },
+        { value: 'Leandro De Araujo', label: 'Leandro' },
+        { value: 'Arlon Luiz Da Silva', label: 'Arlon' },
+        { value: 'Luiz Eduardo Cortegrosso Silva', label: 'Luiz' },
+        { value: 'Jair pacheco Dos Reis Junior', label: 'Reis' },
+        { value: 'Luciano Ferreira', label: 'Ferreira' },
+        { value: 'Saleide Flor Duarte', label: 'Duarte' },
+        { value: 'Maik custodio Agostinho', label: 'Maik' },
     ];
 
-    const INSPETORES = ['INSP MAIK', 'INSP JUNIOR', 'CHEFE DUARTE'];
-    const PATRULHEIROS = [
-        'PATROLHEIRA DUARTE',
-        'PATROLHEIRA JACQUES',
-        'PATROLHEIRO ARLON',
-        'PATROLHEIRO LEANDRO',
-        'PATROLHEIRO LUIZ',
-        'PATROLHEIRO MAIK',
-        'PATROLHEIRO REIS',
+    const INSPETORES = [
+        { value: 'Maik', label: 'Maik' },
+        { value: 'Leandro', label: 'Leandro' },
+        { value: 'Ferreira', label: 'Ferreira' },
     ];
 
+    const PATRULHEIROS = MOTORISTAS;
+
+    const PATRULHAMENTOS = [
+        'Ronda Preventiva',
+        'Apoio Operacional',
+        'Evento Especial',
+        'Atendimento Emergencial',
+        'Missão',
+        'Manutenção de viatura',
+        'Outros',
+    ];
+
+    // ---------------------------------------------------------------
+    // INICIALIZAÇÃO
+    // ---------------------------------------------------------------
     async function initSistema() {
-        supabase = getSupabase();
-
-        const formSaida = document.getElementById('saidaViaturaForm');
-        const tabelaSaidasBody = document.getElementById('tabelaSaidasBody');
-        const formAbastecimento = document.getElementById('abastecimentoForm');
-        const tabelaAbastecimentoElement = document.getElementById('tabelaAbastecimento');
-        const tabelaAbastecimentoBody = tabelaAbastecimentoElement
-            ? tabelaAbastecimentoElement.querySelector('tbody')
-            : null;
-        const voltaModal = document.getElementById('voltaModal');
-        const modalCancelarBtn = document.getElementById('modalCancelarBtn');
-        const modalSalvarBtn = document.getElementById('modalSalvarBtn');
-        const modalViaturaInfo = document.getElementById('modalViaturaInfo');
-        const modalKmChegadaInput = document.getElementById('modalKmChegada');
-        const modalRowIdInput = document.getElementById('modalRowId');
-        const modalErro = document.getElementById('modalErro');
-        const modalFotoInput = document.getElementById('modalFoto');
-        const modalComentariosInput = document.getElementById('modalComentarios');
-        const filtroBuscaInput = document.getElementById('filtroBusca');
-        const btnExportarSaidas = document.getElementById('btnExportarSaidasExcel');
-        const btnExportarAbastecimento = document.getElementById('btnExportarExcel');
-
-        if (!formSaida || !tabelaSaidasBody) {
-            console.warn('Formulário de saída ou tabela não disponível.');
-            return;
-        }
+        console.log('Sistema de controle de viaturas inicializado.');
 
         preencherCombos();
         await carregarDados();
         atualizarContadores();
-
-        formSaida.addEventListener('submit', function (event) {
-            registrarSaida(event, tabelaSaidasBody);
-        });
-
-        tabelaSaidasBody.addEventListener('click', function (event) {
-            const btn = event.target.closest('.btn-volta');
-            if (!btn) return;
-            abrirModalVolta(btn.dataset.rowId, {
-                modalViaturaInfo,
-                modalRowIdInput,
-                modalKmChegadaInput,
-                modalErro,
-                modalFotoInput,
-                modalComentariosInput,
-                voltaModal,
-            });
-        });
-
-        if (modalCancelarBtn) {
-            modalCancelarBtn.addEventListener('click', function () {
-                voltaModal.style.display = 'none';
-            });
-        }
-
-        if (voltaModal) {
-            voltaModal.addEventListener('click', function (event) {
-                if (event.target === voltaModal) {
-                    voltaModal.style.display = 'none';
-                }
-            });
-        }
-
-        if (modalSalvarBtn) {
-            modalSalvarBtn.addEventListener('click', function () {
-                registrarVolta({
-                    modalRowIdInput,
-                    modalKmChegadaInput,
-                    modalErro,
-                    modalFotoInput,
-                    modalComentariosInput,
-                    voltaModal,
-                });
-            });
-        }
-
-        if (formAbastecimento && tabelaAbastecimentoBody) {
-            configurarAbastecimento({
-                formAbastecimento,
-                tabelaAbastecimentoBody,
-            });
-        }
-
-        if (filtroBuscaInput) {
-            filtroBuscaInput.addEventListener('input', filtrarTabela);
-        }
-
-        if (btnExportarSaidas) {
-            btnExportarSaidas.addEventListener('click', function () {
-                exportTableToExcel('tabelaSaidas', 'saidas-viaturas.xlsx');
-            });
-        }
-
-        if (btnExportarAbastecimento) {
-            btnExportarAbastecimento.addEventListener('click', function () {
-                exportTableToExcel('tabelaAbastecimento', 'abastecimentos.xlsx');
-            });
-        }
+        configurarEventos();
     }
 
+    // ---------------------------------------------------------------
+    // PREENCHER SELECTS
+    // ---------------------------------------------------------------
     function preencherCombos() {
-        preencherSelect(document.getElementById('viatura'), VIATURAS);
-        preencherSelect(document.getElementById('viatura_abastecimento'), VIATURAS);
-        preencherSelect(document.getElementById('motorista'), MOTORISTAS);
-        preencherSelect(document.getElementById('motorista_abastecimento'), MOTORISTAS);
-        preencherSelect(document.getElementById('inspetor'), INSPETORES);
-        preencherSelect(document.getElementById('patrulheiro'), PATRULHEIROS);
+        preencherSelect('viatura', VIATURAS);
+        preencherSelect('viatura_abastecimento', VIATURAS);
+        preencherSelect('motorista', MOTORISTAS);
+        preencherSelect('motorista_abastecimento', MOTORISTAS);
+        preencherSelect('patrulheiro', PATRULHEIROS);
+        preencherSelect('inspetor', INSPETORES);
+        preencherSelectSimples('patrulhamento', PATRULHAMENTOS);
     }
 
-    function preencherSelect(selectElement, itens) {
-        if (!selectElement || !Array.isArray(itens)) return;
-        while (selectElement.options.length > 1) {
-            selectElement.remove(1);
+    function preencherSelect(id, itens) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        while (el.options.length > 1) el.remove(1);
+        itens.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.value;
+            opt.textContent = item.label;
+            el.appendChild(opt);
+        });
+    }
+
+    function preencherSelectSimples(id, itens) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        while (el.options.length > 1) el.remove(1);
+        itens.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item;
+            opt.textContent = item;
+            el.appendChild(opt);
+        });
+    }
+
+    // ---------------------------------------------------------------
+    // EVENTOS
+    // ---------------------------------------------------------------
+    function configurarEventos() {
+        // Formulário de saída
+        const formSaida = document.getElementById('saidaViaturaForm');
+        if (formSaida) {
+            formSaida.addEventListener('submit', handleRegistrarSaida);
         }
-        itens.forEach(function (item) {
-            const option = document.createElement('option');
-            option.value = item;
-            option.textContent = item;
-            selectElement.appendChild(option);
+
+        // Modal de volta
+        document.getElementById('modalCancelarBtn')?.addEventListener('click', fecharModal);
+        document.getElementById('modalSalvarBtn')?.addEventListener('click', handleRegistrarVolta);
+        document.getElementById('voltaModal')?.addEventListener('click', e => {
+            if (e.target === e.currentTarget) fecharModal();
         });
+
+        // Delegação de clique na tabela de saídas
+        document.getElementById('tabelaSaidasBody')?.addEventListener('click', e => {
+            const btn = e.target.closest('.btn-volta');
+            if (btn) abrirModalVolta(btn.dataset.rowId);
+        });
+
+        // Formulário de abastecimento
+        const formAbast = document.getElementById('abastecimentoForm');
+        if (formAbast) {
+            formAbast.addEventListener('submit', handleRegistrarAbastecimento);
+
+            // Cálculo automático km rodado / média
+            ['km_abastecimento', 'km_atual', 'litros'].forEach(id => {
+                document.getElementById(id)?.addEventListener('input', calcularAbastecimento);
+            });
+        }
+
+        // Filtro de busca
+        document.getElementById('filtroBusca')?.addEventListener('input', filtrarTabela);
     }
 
-    function registrarSaida(event, tabelaBody) {
+    // ---------------------------------------------------------------
+    // SAÍDA DE VIATURA
+    // ---------------------------------------------------------------
+    async function handleRegistrarSaida(event) {
         event.preventDefault();
-        const form = event.currentTarget;
-        const now = new Date();
-        const rowId = 'saida-' + now.getTime();
-        const kmSaida = form.km_saida.value || '0';
+        const form = event.target;
+        const btn = form.querySelector('[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = 'Salvando...';
 
-        const novaLinha = document.createElement('tr');
-        novaLinha.id = rowId;
+        try {
+            const supabase = getSupabase();
+            const agora = new Date().toISOString();
 
-        const dadosSaida = [
-            form.viatura.value,
-            now.toLocaleString('pt-BR'),
-            kmSaida,
-            form.motorista.value,
-            form.protocolo.value || '-',
-        ];
+            const registro = {
+                viatura: form.viatura.value,
+                km_saida: parseFloat(form.km_saida.value),
+                protocolo: form.protocolo.value ? parseInt(form.protocolo.value) : null,
+                inspetor: form.inspetor.value,
+                motorista: form.motorista.value,
+                patrulheiro: form.patrulheiro.value,
+                patrulhamento: form.patrulhamento.value,
+                data_saida: agora,
+                status: 'em_operacao',
+            };
 
-        dadosSaida.forEach(function (valor) {
-            const td = document.createElement('td');
-            td.textContent = valor;
-            novaLinha.appendChild(td);
-        });
+            const { data, error } = await supabase
+                .from('saidas_viaturas')
+                .insert([registro])
+                .select()
+                .single();
 
-        ['-', '-', '-'].forEach(function (placeholder) {
-            const td = document.createElement('td');
-            td.textContent = placeholder;
-            novaLinha.appendChild(td);
-        });
+            if (error) throw error;
 
-        const acoesCell = document.createElement('td');
-        const btnVolta = document.createElement('button');
-        btnVolta.textContent = 'Registrar Volta';
-        btnVolta.className = 'btn btn-success btn-volta';
-        btnVolta.dataset.rowId = rowId;
-        acoesCell.appendChild(btnVolta);
-        novaLinha.appendChild(acoesCell);
-
-        tabelaBody.appendChild(novaLinha);
-        form.reset();
-        salvarDados();
-        atualizarContadores();
+            adicionarLinhaSaida(data);
+            form.reset();
+            atualizarContadores();
+            mostrarToast('Saída registrada com sucesso!', 'success');
+        } catch (err) {
+            console.error('Erro ao registrar saída:', err);
+            mostrarToast('Erro ao registrar saída: ' + err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Registrar Saída';
+        }
     }
 
-    function abrirModalVolta(rowId, contexto) {
+    function adicionarLinhaSaida(registro) {
+        const tbody = document.getElementById('tabelaSaidasBody');
+        if (!tbody) return;
+
+        const tr = document.createElement('tr');
+        tr.id = 'row-' + registro.id;
+        tr.dataset.id = registro.id;
+
+        const dataHora = new Date(registro.data_saida).toLocaleString('pt-BR');
+
+        tr.innerHTML = `
+            <td>${registro.viatura}</td>
+            <td>${dataHora}</td>
+            <td>${registro.km_saida}</td>
+            <td>${registro.motorista}</td>
+            <td>${registro.protocolo ?? '-'}</td>
+            <td class="cell-km-chegada">-</td>
+            <td class="cell-km-rodado">-</td>
+            <td class="cell-fotos">-</td>
+            <td class="cell-obs">-</td>
+            <td>
+                <button class="btn btn-success btn-volta" data-row-id="row-${registro.id}">
+                    Registrar Volta
+                </button>
+            </td>
+        `;
+
+        tbody.insertBefore(tr, tbody.firstChild);
+    }
+
+    // ---------------------------------------------------------------
+    // MODAL DE VOLTA
+    // ---------------------------------------------------------------
+    function abrirModalVolta(rowId) {
         const linha = document.getElementById(rowId);
         if (!linha) return;
 
-        const {
-            modalViaturaInfo,
-            modalRowIdInput,
-            modalKmChegadaInput,
-            modalErro,
-            modalFotoInput,
-            modalComentariosInput,
-            voltaModal,
-        } = contexto;
+        const viatura = linha.cells[0].textContent;
+        const kmSaida = linha.cells[2].textContent;
 
-        const viatura = linha.cells[0]?.textContent;
-        const kmSaida = linha.cells[2]?.textContent;
+        document.getElementById('modalViaturaInfo').textContent =
+            `Viatura: ${viatura} | Km Saída: ${kmSaida}`;
+        document.getElementById('modalRowId').value = rowId;
+        document.getElementById('modalKmChegada').value = '';
+        document.getElementById('modalKmChegada').min = kmSaida;
+        document.getElementById('modalComentarios').value = '';
+        document.getElementById('modalFoto').value = '';
 
-        modalViaturaInfo.textContent = Viatura:  | Km Saída: ;
-        modalRowIdInput.value = rowId;
-        modalKmChegadaInput.value = '';
-        modalKmChegadaInput.min = kmSaida || '0';
-        modalErro.style.display = 'none';
-        modalFotoInput.value = '';
-        modalComentariosInput.value = '';
-        voltaModal.style.display = 'flex';
+        const erro = document.getElementById('modalErro');
+        erro.style.display = 'none';
+
+        document.getElementById('voltaModal').style.display = 'flex';
     }
 
-    function registrarVolta(contexto) {
-        const {
-            modalRowIdInput,
-            modalKmChegadaInput,
-            modalErro,
-            modalFotoInput,
-            modalComentariosInput,
-            voltaModal,
-        } = contexto;
+    function fecharModal() {
+        document.getElementById('voltaModal').style.display = 'none';
+    }
 
-        const rowId = modalRowIdInput.value;
+    async function handleRegistrarVolta() {
+        const rowId = document.getElementById('modalRowId').value;
         const linha = document.getElementById(rowId);
-        if (!linha) {
+        if (!linha) return;
+
+        const kmSaida = parseFloat(linha.cells[2].textContent);
+        const kmChegadaVal = document.getElementById('modalKmChegada').value;
+        const kmChegada = parseFloat(kmChegadaVal);
+        const comentarios = document.getElementById('modalComentarios').value;
+        const erroEl = document.getElementById('modalErro');
+        const salvarBtn = document.getElementById('modalSalvarBtn');
+
+        erroEl.style.display = 'none';
+
+        if (isNaN(kmChegada) || kmChegada < kmSaida) {
+            erroEl.textContent = 'ERRO: O Km de Chegada deve ser maior ou igual ao Km de Saída.';
+            erroEl.style.display = 'block';
             return;
         }
 
-        const kmSaida = parseFloat(linha.cells[2]?.textContent.replace(',', '.'));
-        const kmEntrada = parseFloat(modalKmChegadaInput.value);
+        salvarBtn.disabled = true;
+        salvarBtn.textContent = 'Salvando...';
 
-        if (isNaN(kmEntrada) || kmEntrada < kmSaida) {
-            modalErro.textContent = 'ERRO: O Km de Chegada deve ser maior ou igual ao Km de Saída.';
-            modalErro.style.display = 'block';
-            return;
-        }
+        try {
+            const supabase = getSupabase();
+            const registroId = linha.dataset.id;
+            const kmRodado = kmChegada - kmSaida;
 
-        const kmRodado = kmEntrada - kmSaida;
-        linha.cells[5].textContent = kmEntrada.toFixed(1);
-        linha.cells[6].textContent = kmRodado.toFixed(1);
+            // Upload de fotos (Supabase Storage), se houver
+            const fotoInput = document.getElementById('modalFoto');
+            const fotosUrls = [];
 
-        const fotoCell = linha.cells[7];
-        const comentarioCell = linha.cells[8];
+            if (fotoInput.files.length > 0) {
+                for (const file of fotoInput.files) {
+                    const nomeArquivo = `viaturas/${registroId}/${Date.now()}_${file.name}`;
+                    const { data: uploadData, error: uploadError } = await supabase.storage
+                        .from('fotos-viaturas')
+                        .upload(nomeArquivo, file, { upsert: true });
 
-        comentarioCell.textContent = modalComentariosInput.value || 'Sem observações';
-        comentarioCell.style.whiteSpace = 'normal';
+                    if (!uploadError && uploadData) {
+                        const { data: urlData } = supabase.storage
+                            .from('fotos-viaturas')
+                            .getPublicUrl(nomeArquivo);
+                        fotosUrls.push(urlData.publicUrl);
+                    }
+                }
+            }
 
-        fotoCell.innerHTML = '';
-        fotoCell.style.whiteSpace = 'normal';
+            const { error } = await supabase
+                .from('saidas_viaturas')
+                .update({
+                    km_chegada: kmChegada,
+                    km_rodado: kmRodado,
+                    observacoes: comentarios || null,
+                    fotos: fotosUrls.length > 0 ? fotosUrls : null,
+                    status: 'finalizado',
+                    data_chegada: new Date().toISOString(),
+                })
+                .eq('id', registroId);
 
-        if (modalFotoInput.files.length > 0) {
-            Array.prototype.forEach.call(modalFotoInput.files, function (file) {
-                const reader = new FileReader();
-                reader.onload = function (event) {
+            if (error) throw error;
+
+            // Atualiza linha na tabela
+            linha.querySelector('.cell-km-chegada').textContent = kmChegada;
+            linha.querySelector('.cell-km-rodado').textContent = kmRodado.toFixed(1);
+            linha.querySelector('.cell-obs').textContent = comentarios || 'Sem observações';
+
+            const fotoCell = linha.querySelector('.cell-fotos');
+            fotoCell.innerHTML = '';
+            if (fotosUrls.length > 0) {
+                fotosUrls.forEach(url => {
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.target = '_blank';
                     const img = document.createElement('img');
-                    img.src = event.target.result;
-                    img.style.width = '80px';
-                    img.style.height = '80px';
-                    img.style.objectFit = 'cover';
-                    img.style.margin = '2px';
-                    img.style.cursor = 'pointer';
-                    img.style.border = '1px solid #ddd';
-                    img.style.borderRadius = '4px';
+                    img.src = url;
+                    img.style.cssText = 'width:60px;height:60px;object-fit:cover;margin:2px;border-radius:4px;border:1px solid #ddd;cursor:pointer;';
+                    a.appendChild(img);
+                    fotoCell.appendChild(a);
+                });
+            } else {
+                fotoCell.textContent = 'Sem foto';
+            }
 
-                    const link = document.createElement('a');
-                    link.href = event.target.result;
-                    link.target = '_blank';
-                    link.appendChild(img);
+            linha.cells[9].innerHTML = '<button class="btn btn-secondary" disabled>Finalizado</button>';
+            linha.classList.add('viagem-finalizada');
 
-                    fotoCell.appendChild(link);
-                };
-                reader.readAsDataURL(file);
-            });
-        } else {
-            fotoCell.textContent = 'Sem Foto';
+            fecharModal();
+            atualizarContadores();
+            mostrarToast('Chegada registrada com sucesso!', 'success');
+        } catch (err) {
+            console.error('Erro ao registrar volta:', err);
+            erroEl.textContent = 'Erro ao salvar: ' + err.message;
+            erroEl.style.display = 'block';
+        } finally {
+            salvarBtn.disabled = false;
+            salvarBtn.textContent = 'Salvar';
         }
-
-        linha.cells[9].innerHTML = '<button class="btn btn-secondary" disabled>Finalizado</button>';
-        linha.classList.add('viagem-finalizada');
-
-        modalFotoInput.value = '';
-        modalComentariosInput.value = '';
-        modalErro.style.display = 'none';
-        voltaModal.style.display = 'none';
-
-        salvarDados();
-        atualizarContadores();
     }
 
-    function configurarAbastecimento({ formAbastecimento, tabelaAbastecimentoBody }) {
-        const kmAbastecimentoInput = formAbastecimento.km_abastecimento;
-        const kmAtualInput = formAbastecimento.km_atual;
-        const litrosInput = formAbastecimento.litros;
+    // ---------------------------------------------------------------
+    // ABASTECIMENTO
+    // ---------------------------------------------------------------
+    function calcularAbastecimento() {
+        const km1 = parseFloat(document.getElementById('km_abastecimento').value);
+        const km2 = parseFloat(document.getElementById('km_atual').value);
+        const litros = parseFloat(document.getElementById('litros').value);
+
         const kmRodadoInput = document.getElementById('km_rodado');
         const mediaInput = document.getElementById('media_km_l');
 
-        function calcularValores() {
-            const km1 = parseFloat(kmAbastecimentoInput.value);
-            const km2 = parseFloat(kmAtualInput.value);
-            const litrosVal = parseFloat(litrosInput.value);
-
-            if (!isNaN(km1) && !isNaN(km2) && km2 > km1) {
-                const rodado = km2 - km1;
-                kmRodadoInput.value = rodado.toFixed(0);
-                if (!isNaN(litrosVal) && litrosVal > 0) {
-                    mediaInput.value = (rodado / litrosVal).toFixed(2) + ' KM/L';
-                } else {
-                    mediaInput.value = '';
-                }
+        if (!isNaN(km1) && !isNaN(km2) && km2 > km1) {
+            const rodado = km2 - km1;
+            kmRodadoInput.value = rodado.toFixed(0);
+            if (!isNaN(litros) && litros > 0) {
+                mediaInput.value = (rodado / litros).toFixed(2) + ' KM/L';
             } else {
-                kmRodadoInput.value = '';
                 mediaInput.value = '';
             }
-        }
-
-        [kmAbastecimentoInput, kmAtualInput, litrosInput].forEach(function (input) {
-            if (input) {
-                input.addEventListener('input', calcularValores);
-            }
-        });
-
-        formAbastecimento.addEventListener('submit', async function (event) {
-            event.preventDefault();
-            if (!tabelaAbastecimentoBody) return;
-
-            const viatura = formAbastecimento.viatura_abastecimento.value;
-            const data = formAbastecimento.data_abastecimento.value;
-            const km_abastecimento = parseFloat(kmAbastecimentoInput.value);
-            const km_atual = parseFloat(kmAtualInput.value);
-            const litros = parseFloat(litrosInput.value);
-
-            if (km_atual < km_abastecimento) {
-                alert('O KM atual não pode ser menor que o KM do abastecimento.');
-                return;
-            }
-
-            if (litros <= 0) {
-                alert('A quantidade de litros deve ser maior que zero.');
-                return;
-            }
-
-            const km_rodado = km_atual - km_abastecimento;
-            const media = km_rodado / litros;
-
-            const novoAbastecimento = {
-                viatura,
-                data,
-                km_abastecimento,
-                km_atual,
-                litros,
-                km_rodado,
-                media: media.toFixed(2),
-            };
-
-            const { data: insertedData, error } = await supabase
-                .from('abastecimentos')
-                .insert([novoAbastecimento]);
-
-            if (error) {
-                console.error('Erro ao salvar abastecimento:', error);
-                alert('Não foi possível salvar o abastecimento. Verifique o console para mais detalhes.');
-                return;
-            }
-
-            const novaLinha = document.createElement('tr');
-            const dados = [
-                viatura,
-                new Date(data).toLocaleDateString('pt-BR'),
-                km_abastecimento,
-                km_atual,
-                litros,
-                km_rodado,
-                media.toFixed(2),
-            ];
-            dados.forEach(function (dado) {
-                const td = document.createElement('td');
-                td.textContent = dado || '-';
-                novaLinha.appendChild(td);
-            });
-
-            tabelaAbastecimentoBody.appendChild(novaLinha);
-            formAbastecimento.reset();
+        } else {
             kmRodadoInput.value = '';
             mediaInput.value = '';
-            salvarDados();
-        });
-    }
-
-    function salvarDados() {
-        const tabelaSaidasBody = document.getElementById('tabelaSaidasBody');
-
-        if (tabelaSaidasBody) {
-            localStorage.setItem('saidasViaturas', tabelaSaidasBody.innerHTML);
         }
     }
 
+    async function handleRegistrarAbastecimento(event) {
+        event.preventDefault();
+        const form = event.target;
+        const btn = form.querySelector('[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = 'Salvando...';
+
+        try {
+            const supabase = getSupabase();
+            const kmAbast = parseFloat(document.getElementById('km_abastecimento').value);
+            const kmAtual = parseFloat(document.getElementById('km_atual').value);
+            const litros = parseFloat(document.getElementById('litros').value);
+            const kmRodado = kmAtual - kmAbast;
+            const media = litros > 0 ? kmRodado / litros : null;
+
+            const registro = {
+                viatura: form.viatura_abastecimento.value,
+                data_abastecimento: form.data_abastecimento.value,
+                km_abastecimento: kmAbast,
+                km_atual: kmAtual,
+                litros: litros,
+                km_rodado: kmRodado,
+                media_km_l: media,
+                motorista: form.motorista_abastecimento.value,
+            };
+
+            const { data, error } = await supabase
+                .from('abastecimentos')
+                .insert([registro])
+                .select()
+                .single();
+
+            if (error) throw error;
+
+            adicionarLinhaAbastecimento(data);
+            form.reset();
+            document.getElementById('km_rodado').value = '';
+            document.getElementById('media_km_l').value = '';
+            mostrarToast('Abastecimento registrado com sucesso!', 'success');
+        } catch (err) {
+            console.error('Erro ao registrar abastecimento:', err);
+            mostrarToast('Erro ao registrar abastecimento: ' + err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Registrar Abastecimento';
+        }
+    }
+
+    function adicionarLinhaAbastecimento(registro) {
+        const tbody = document.querySelector('#tabelaAbastecimento tbody');
+        if (!tbody) return;
+
+        const data = new Date(registro.data_abastecimento + 'T00:00:00')
+            .toLocaleDateString('pt-BR');
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${registro.viatura}</td>
+            <td>${data}</td>
+            <td>${registro.km_abastecimento}</td>
+            <td>${registro.km_atual}</td>
+            <td>${registro.litros}</td>
+            <td>${registro.km_rodado}</td>
+            <td>${registro.media_km_l ? registro.media_km_l.toFixed(2) + ' KM/L' : '-'}</td>
+        `;
+        tbody.insertBefore(tr, tbody.firstChild);
+    }
+
+    // ---------------------------------------------------------------
+    // CARREGAR DADOS DO SUPABASE
+    // ---------------------------------------------------------------
     async function carregarDados() {
-        const tabelaSaidasBody = document.getElementById('tabelaSaidasBody');
-        const tabelaAbastecimentoElement = document.getElementById('tabelaAbastecimento');
-        const tabelaAbastecimentoBody = tabelaAbastecimentoElement
-            ? tabelaAbastecimentoElement.querySelector('tbody')
-            : null;
+        try {
+            const supabase = getSupabase();
 
-        const saidasHTML = localStorage.getItem('saidasViaturas');
+            // Usando Promise.all para carregar saídas e abastecimentos paralelamente
+            const [saidasResult, abastResult] = await Promise.all([
+                supabase.from('saidas_viaturas').select('*').order('data_saida', { ascending: false }).limit(100),
+                supabase.from('abastecimentos').select('*').order('data_abastecimento', { ascending: false }).limit(100)
+            ]);
 
-        if (saidasHTML && tabelaSaidasBody) {
-            tabelaSaidasBody.innerHTML = saidasHTML;
-        }
+            if (saidasResult.error) throw saidasResult.error;
+            if (abastResult.error) throw abastResult.error;
 
-        if (tabelaAbastecimentoBody) {
-            const { data, error } = await supabase.from('abastecimentos').select('*');
-
-            if (error) {
-                console.error('Erro ao carregar abastecimentos:', error);
-                return;
+            const tbody = document.getElementById('tabelaSaidasBody');
+            if (tbody && saidasResult.data) {
+                tbody.innerHTML = '';
+                saidasResult.data.forEach(registro => {
+                    if (registro.status === 'finalizado') {
+                        adicionarLinhaSaidaFinalizada(registro);
+                    } else {
+                        adicionarLinhaSaida(registro);
+                    }
+                });
             }
 
-            tabelaAbastecimentoBody.innerHTML = '';
-            data.forEach(abastecimento => {
-                const novaLinha = document.createElement('tr');
-                const dados = [
-                    abastecimento.viatura,
-                    new Date(abastecimento.data).toLocaleDateString('pt-BR'),
-                    abastecimento.km_abastecimento,
-                    abastecimento.km_atual,
-                    abastecimento.litros,
-                    abastecimento.km_rodado,
-                    abastecimento.media,
-                ];
-                dados.forEach(function (dado) {
-                    const td = document.createElement('td');
-                    td.textContent = dado || '-';
-                    novaLinha.appendChild(td);
-                });
-                tabelaAbastecimentoBody.appendChild(novaLinha);
-            });
+            const tbodyAbast = document.querySelector('#tabelaAbastecimento tbody');
+            if (tbodyAbast && abastResult.data) {
+                tbodyAbast.innerHTML = '';
+                abastResult.data.forEach(registro => adicionarLinhaAbastecimento(registro));
+            }
+        } catch (err) {
+            console.error('Erro ao carregar dados:', err);
+            mostrarToast('Erro ao carregar dados: ' + err.message, 'error');
         }
     }
 
+    function adicionarLinhaSaidaFinalizada(registro) {
+        const tbody = document.getElementById('tabelaSaidasBody');
+        if (!tbody) return;
+
+        const tr = document.createElement('tr');
+        tr.id = 'row-' + registro.id;
+        tr.dataset.id = registro.id;
+        tr.classList.add('viagem-finalizada');
+
+        const dataHora = new Date(registro.data_saida).toLocaleString('pt-BR');
+        const kmRodado = registro.km_rodado ?? (registro.km_chegada - registro.km_saida);
+
+        // Fotos
+        let fotosHtml = 'Sem foto';
+        if (registro.fotos && registro.fotos.length > 0) {
+            fotosHtml = registro.fotos.map(url =>
+                `<a href="${url}" target="_blank">
+                    <img src="${url}" style="width:60px;height:60px;object-fit:cover;margin:2px;border-radius:4px;border:1px solid #ddd;cursor:pointer;">
+                </a>`
+            ).join('');
+        }
+
+        tr.innerHTML = `
+            <td>${registro.viatura}</td>
+            <td>${dataHora}</td>
+            <td>${registro.km_saida}</td>
+            <td>${registro.motorista}</td>
+            <td>${registro.protocolo ?? '-'}</td>
+            <td class="cell-km-chegada">${registro.km_chegada ?? '-'}</td>
+            <td class="cell-km-rodado">${kmRodado?.toFixed(1) ?? '-'}</td>
+            <td class="cell-fotos">${fotosHtml}</td>
+            <td class="cell-obs">${registro.observacoes ?? 'Sem observações'}</td>
+            <td><button class="btn btn-secondary" disabled>Finalizado</button></td>
+        `;
+
+        tbody.appendChild(tr);
+    }
+
+    // ---------------------------------------------------------------
+    // FILTRO
+    // ---------------------------------------------------------------
     function filtrarTabela() {
-        const filtroInput = document.getElementById('filtroBusca');
-        const tabelaSaidasBody = document.getElementById('tabelaSaidasBody');
-        if (!filtroInput || !tabelaSaidasBody) return;
+        const termo = document.getElementById('filtroBusca').value.trim().toLowerCase();
+        const linhas = document.querySelectorAll('#tabelaSaidasBody tr');
 
-        const termo = filtroInput.value.trim().toLowerCase();
-        const linhas = tabelaSaidasBody.querySelectorAll('tr');
-
-        linhas.forEach(function (linha) {
+        linhas.forEach(linha => {
             const viatura = (linha.cells[0]?.textContent || '').toLowerCase();
             const motorista = (linha.cells[3]?.textContent || '').toLowerCase();
             const protocolo = (linha.cells[4]?.textContent || '').toLowerCase();
-            const corresponde =
-                termo === '' ||
+
+            const corresponde = termo === '' ||
                 viatura.includes(termo) ||
                 motorista.includes(termo) ||
                 protocolo.includes(termo);
@@ -474,44 +529,68 @@
         });
     }
 
+    // ---------------------------------------------------------------
+    // CONTADORES
+    // ---------------------------------------------------------------
     function atualizarContadores() {
-        const tabelaSaidasBody = document.getElementById('tabelaSaidasBody');
-        const emOperacaoSpan = document.getElementById('contadorEmOperacao');
-        const finalizadasSpan = document.getElementById('contadorFinalizadas');
-        const totalKmSpan = document.getElementById('contadorTotalKm');
+        const linhas = document.querySelectorAll('#tabelaSaidasBody tr');
+        let emOperacao = 0, finalizadas = 0, totalKm = 0;
 
-        if (!tabelaSaidasBody || !emOperacaoSpan || !finalizadasSpan || !totalKmSpan) {
-            return;
-        }
-
-        const linhas = tabelaSaidasBody.querySelectorAll('tr');
-        let emOperacao = 0;
-        let finalizadas = 0;
-        let totalKm = 0;
-
-        linhas.forEach(function (linha) {
-            const kmRodadoTexto = linha.cells[6]?.textContent || '';
-            const kmRodado = parseFloat(kmRodadoTexto.replace(',', '.').replace(/[^\d.-]/g, ''));
+        linhas.forEach(linha => {
+            if (linha.style.display === 'none') return;
             if (linha.classList.contains('viagem-finalizada')) {
-                finalizadas += 1;
-                if (!isNaN(kmRodado)) {
-                    totalKm += kmRodado;
-                }
+                finalizadas++;
+                const kmTexto = linha.querySelector('.cell-km-rodado')?.textContent || '';
+                const km = parseFloat(kmTexto.replace(',', '.').replace(/[^\d.-]/g, ''));
+                if (!isNaN(km)) totalKm += km;
             } else {
-                emOperacao += 1;
+                emOperacao++;
             }
         });
 
-        emOperacaoSpan.textContent = emOperacao;
-        finalizadasSpan.textContent = finalizadas;
-        totalKmSpan.textContent = totalKm.toFixed(1);
+        const emOpEl = document.getElementById('contadorEmOperacao');
+        const finEl = document.getElementById('contadorFinalizadas');
+        const kmEl = document.getElementById('contadorTotalKm');
+
+        if (emOpEl) emOpEl.textContent = emOperacao;
+        if (finEl) finEl.textContent = finalizadas;
+        if (kmEl) kmEl.textContent = totalKm.toFixed(1);
     }
 
-    function exportTableToExcel(tableId, filename) {
-        const table = document.getElementById(tableId);
-        if (!table || !window.XLSX) return;
-        const workbook = XLSX.utils.table_to_book(table, { sheet: 'Dados' });
-        XLSX.writeFile(workbook, filename);
+    // ---------------------------------------------------------------
+    // TOAST DE NOTIFICAÇÃO
+    // ---------------------------------------------------------------
+    function mostrarToast(mensagem, tipo = 'success') {
+        let toast = document.getElementById('gml-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'gml-toast';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 24px;
+                right: 24px;
+                padding: 12px 20px;
+                border-radius: 8px;
+                color: #fff;
+                font-size: 14px;
+                font-weight: 500;
+                z-index: 9999;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                max-width: 320px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            document.body.appendChild(toast);
+        }
+
+        toast.textContent = mensagem;
+        toast.style.backgroundColor = tipo === 'success' ? '#28a745' : '#dc3545';
+        toast.style.opacity = '1';
+
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => {
+            toast.style.opacity = '0';
+        }, 3500);
     }
 
     window.initSistema = initSistema;
