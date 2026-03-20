@@ -9,6 +9,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="description" content="GML - Controle de Viaturas da Guarda Municipal de Laguna">
     <title>GML - Controle de Viaturas</title>
+
+    <!-- TODO: Substitua os valores abaixo pela sua URL e Chave Anônima (anon key) do Supabase -->
+    <script>
+        window.ENV_SUPABASE_URL = "https://ysrexztknpgrsoqioxjf.supabase.co";
+        window.ENV_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzcmV4enRrbnBncnNvcWlveGpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2NjYxMDAsImV4cCI6MjA4OTI0MjEwMH0.r52VrHZRmiAk5agdK5C54NNzAt8CyTkZvl8YSbffQW4";
+    </script>
+
     <link rel="manifest" href="manifest.json" />
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     <link rel="stylesheet" href="css/base.css">
@@ -275,8 +282,16 @@
         </div>
     </div>
 
+    <!-- 1º: SDK do Supabase (Obrigatório) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- 2º: Arquivo com as suas chaves -->
     <script src="js/config.js"></script>
+
+    <!-- 3º: Arquivo que cria a conexão (getSupabase) -->
     <script src="js/supabaseClient.js"></script>
+
+    <!-- 4º: O arquivo que tenta salvar os dados -->
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/components/headerUsuario.js"></script>
