@@ -3,7 +3,7 @@
 Sistema de controle e gestão de viaturas da Guarda Municipal de Laguna (GML).
 
 ## Visão Geral
-
+projeto inicial do controle de viaturas
 Este é um aplicativo web progressivo (PWA) para gerenciamento de frota de viaturas, permitindo:
 - Registro de saída e retorno de viaturas
 - Controle de abastecimento
