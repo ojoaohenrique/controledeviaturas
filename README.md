@@ -284,7 +284,11 @@ Verifique se todos os arquivos PNG estão presentes em `frontend/icons/` e se os
 
 ## Licença
 
-Este projeto é propriedade da Guarda Municipal de Laguna.
+## Licença
+
+Este projeto foi desenvolvido por João Henrique Fanfa como solução para a Guarda Municipal de Laguna.
+
+Todos os direitos de desenvolvimento são reservados ao autor, sendo o sistema apresentado como parte de portfólio.
 
 ## Suporte
 
