@@ -51,3 +51,4 @@ CREATE POLICY "Permitir tudo - saidas"
 CREATE POLICY "Permitir tudo - abastecimentos"
     ON public.abastecimentos FOR ALL
     USING (true) WITH CHECK (true);
+
