@@ -39,11 +39,12 @@ self.addEventListener("install", (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener("activate", (event) => {
+    const currentCaches = [STATIC_CACHE, API_CACHE];
     event.waitUntil(
         caches.keys().then((keys) =>
             Promise.all(
                 keys
-                    .filter((key) => !key.includes(CACHE_NAME.replace('-v2', '')) || key !== STATIC_CACHE && key !== API_CACHE)
+                    .filter((key) => !currentCaches.includes(key))
                     .map((key) => {
                         console.log("[SW] Deleting old cache:", key);
                         return caches.delete(key);
@@ -196,4 +197,3 @@ async function syncFormSubmissions() {
     console.log("[SW] Syncing form submissions...");
     // Implement form sync logic here if needed
 }
-
