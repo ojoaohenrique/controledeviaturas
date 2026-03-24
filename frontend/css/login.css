@@ -45,9 +45,26 @@
     border: 1px solid var(--cinza-borda);
 }
 
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper .toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--cinza-texto);
+    padding: 0;
+}
+
+
 .login-error {
     color: #b00020;
     font-size: 0.85rem;
     margin-bottom: 12px;
 }
-
