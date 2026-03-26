@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS public.saidas_viaturas (
 CREATE TABLE IF NOT EXISTS public.abastecimentos (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     viatura             TEXT NOT NULL,
-    data_abastecimento  DATE NOT NULL,
+    data_abastecimento  TIMESTAMPTZ NOT NULL,
     km_abastecimento    NUMERIC NOT NULL,
     km_atual            NUMERIC NOT NULL,
     litros              NUMERIC NOT NULL,
@@ -51,4 +51,3 @@ CREATE POLICY "Permitir tudo - saidas"
 CREATE POLICY "Permitir tudo - abastecimentos"
     ON public.abastecimentos FOR ALL
     USING (true) WITH CHECK (true);
-

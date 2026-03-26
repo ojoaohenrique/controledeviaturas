@@ -151,8 +151,8 @@
 
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="data_abastecimento" class="required">Data Abastecimento</label>
-                                <input type="date" id="data_abastecimento" name="data_abastecimento" required>
+                                <label for="data_abastecimento" class="required">Data/Hora Abastecimento</label>
+                                <input type="datetime-local" id="data_abastecimento" name="data_abastecimento" required>
                             </div>
                             <div class="form-group">
                                 <label for="km_abastecimento" class="required">KM do Abastecimento</label>
@@ -218,6 +218,7 @@
                             <th>Km Saída</th>
                             <th>Motorista</th>
                             <th>Protocolo</th>
+                            <th>Data/Hora Chegada</th>
                             <th>Km Chegada</th>
                             <th>Km Rodado</th>
                             <th>Fotos</th>
@@ -236,7 +237,7 @@
                     <thead>
                         <tr>
                             <th>Viatura</th>
-                            <th>Data</th>
+                            <th>Data/Hora</th>
                             <th>KM Abastec.</th>
                             <th>KM Atual</th>
                             <th>Litros</th>
@@ -261,6 +262,10 @@
         <div class="modal-content">
             <h3>Registrar Chegada da Viatura</h3>
             <p id="modalViaturaInfo"></p>
+            <div class="form-group">
+                <label for="modalDataChegada" class="required">Data/Hora de Chegada</label>
+                <input type="datetime-local" id="modalDataChegada" name="modalDataChegada" required>
+            </div>
             <div class="form-group">
                 <label for="modalKmChegada" class="required">KM de Chegada</label>
                 <input type="number" id="modalKmChegada" name="modalKmChegada" required>

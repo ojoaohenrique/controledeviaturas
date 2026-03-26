@@ -196,6 +196,7 @@
             <td>${registro.km_saida}</td>
             <td>${registro.motorista}</td>
             <td>${registro.protocolo ?? '-'}</td>
+            <td class="cell-data-chegada">-</td>
             <td class="cell-km-chegada">-</td>
             <td class="cell-km-rodado">-</td>
             <td class="cell-fotos">-</td>
@@ -223,6 +224,12 @@
         document.getElementById('modalViaturaInfo').textContent =
             `Viatura: ${viatura} | Km Saída: ${kmSaida}`;
         document.getElementById('modalRowId').value = rowId;
+
+        // Formatar a data/hora atual para o formato datetime-local
+        const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+        const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 16);
+        document.getElementById('modalDataChegada').value = localISOTime;
+
         document.getElementById('modalKmChegada').value = '';
         document.getElementById('modalKmChegada').min = kmSaida;
         document.getElementById('modalComentarios').value = '';
@@ -244,6 +251,7 @@
         if (!linha) return;
 
         const kmSaida = parseFloat(linha.cells[2].textContent);
+        const dataChegada = document.getElementById('modalDataChegada').value;
         const kmChegadaVal = document.getElementById('modalKmChegada').value;
         const kmChegada = parseFloat(kmChegadaVal);
         const comentarios = document.getElementById('modalComentarios').value;
@@ -294,13 +302,14 @@
                     observacoes: comentarios || null,
                     fotos: fotosUrls.length > 0 ? fotosUrls : null,
                     status: 'finalizado',
-                    data_chegada: new Date().toISOString(),
+                    data_chegada: new Date(dataChegada).toISOString(),
                 })
                 .eq('id', registroId);
 
             if (error) throw error;
 
             // Atualiza linha na tabela
+            linha.querySelector('.cell-data-chegada').textContent = new Date(dataChegada).toLocaleString('pt-BR');
             linha.querySelector('.cell-km-chegada').textContent = kmChegada;
             linha.querySelector('.cell-km-rodado').textContent = kmRodado.toFixed(1);
             linha.querySelector('.cell-obs').textContent = comentarios || 'Sem observações';
@@ -322,7 +331,7 @@
                 fotoCell.textContent = 'Sem foto';
             }
 
-            linha.cells[9].innerHTML = '<button class="btn btn-secondary" disabled>Finalizado</button>';
+            linha.cells[10].innerHTML = '<button class="btn btn-secondary" disabled>Finalizado</button>';
             linha.classList.add('viagem-finalizada');
 
             fecharModal();
@@ -415,13 +424,16 @@
         const tbody = document.querySelector('#tabelaAbastecimento tbody');
         if (!tbody) return;
 
-        const data = new Date(registro.data_abastecimento + 'T00:00:00')
-            .toLocaleDateString('pt-BR');
+        let dataStr = '-';
+        if (registro.data_abastecimento) {
+            const dataObj = registro.data_abastecimento.includes('T') ? new Date(registro.data_abastecimento) : new Date(registro.data_abastecimento + 'T00:00:00');
+            dataStr = dataObj.toLocaleString('pt-BR');
+        }
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${registro.viatura}</td>
-            <td>${data}</td>
+            <td>${dataStr}</td>
             <td>${registro.km_abastecimento}</td>
             <td>${registro.km_atual}</td>
             <td>${registro.litros}</td>
@@ -481,6 +493,7 @@
 
         const dataHora = new Date(registro.data_saida).toLocaleString('pt-BR');
         const kmRodado = registro.km_rodado ?? (registro.km_chegada - registro.km_saida);
+        const dataHoraChegada = registro.data_chegada ? new Date(registro.data_chegada).toLocaleString('pt-BR') : '-';
 
         // Fotos
         let fotosHtml = 'Sem foto';
@@ -498,6 +511,7 @@
             <td>${registro.km_saida}</td>
             <td>${registro.motorista}</td>
             <td>${registro.protocolo ?? '-'}</td>
+            <td class="cell-data-chegada">${dataHoraChegada}</td>
             <td class="cell-km-chegada">${registro.km_chegada ?? '-'}</td>
             <td class="cell-km-rodado">${kmRodado?.toFixed(1) ?? '-'}</td>
             <td class="cell-fotos">${fotosHtml}</td>
