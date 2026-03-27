@@ -18,7 +18,7 @@
         API_BASE_URL: window.ENV_API_BASE_URL || '/api',
 
         // App version
-        APP_VERSION: '1.0.2',
+        APP_VERSION: '1.0.3',
 
         // Environment
         IS_PRODUCTION: window.location.hostname !== 'localhost' &&
