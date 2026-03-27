@@ -1,6 +1,6 @@
-const CACHE_NAME = "gml-viaturas-cache-v5";
-const STATIC_CACHE = "gml-static-v5";
-const API_CACHE = "gml-api-v5";
+const CACHE_NAME = "gml-viaturas-cache-v6";
+const STATIC_CACHE = "gml-static-v6";
+const API_CACHE = "gml-api-v6";
 
 const ASSETS_TO_CACHE = [
     "/",
