@@ -292,4 +292,5 @@ Todos os direitos de desenvolvimento são reservados ao autor, sendo o sistema a
 
 ## Suporte
 
-Para suporte, entre em contato com a equipe de TI da GML.
+Para suporte, entre em contato comigo ou com a equipe de TI da GML.
+
