@@ -1,6 +1,6 @@
-const CACHE_NAME = "gml-viaturas-cache-v6";
-const STATIC_CACHE = "gml-static-v6";
-const API_CACHE = "gml-api-v6";
+const CACHE_NAME = "gml-viaturas-cache-v7";
+const STATIC_CACHE = "gml-static-v7";
+const API_CACHE = "gml-api-v7";
 
 const ASSETS_TO_CACHE = [
     "/",
@@ -71,8 +71,14 @@ self.addEventListener("fetch", (event) => {
         return;
     }
 
-    // Static assets - Cache First with network fallback
-    if (isStaticAsset(url)) {
+    // JavaScript files: Use Network First strategy to ensure logic is always up-to-date.
+    if (url.pathname.endsWith(".js")) {
+        event.respondWith(handlePageRequest(request));
+        return;
+    }
+
+    // Other static assets (CSS, images): Use Cache First for performance.
+    else if (isStaticAsset(url)) {
         event.respondWith(handleStaticRequest(request));
         return;
     }
