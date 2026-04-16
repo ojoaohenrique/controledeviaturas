@@ -298,3 +298,8 @@ Para suporte, entre em contato comigo ou com a equipe de TI da GML.
 
 João Henrique Fanfa/Guarda municipal de laguna 2026.
 
+
+
+
+
+
